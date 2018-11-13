@@ -314,7 +314,7 @@ class EazyScripts
      */
     public function getPrescriber($id)
     {
-        $request = new Request(sprintf("/prescribers/%s/info", $id));
+        $request = new Request(sprintf("/prescribers/%s", $id));
 
         $request->withAuthorization($this->getToken(), true);
 
@@ -453,13 +453,13 @@ class EazyScripts
      * @param  SearchQuery|null $search
      * @return EazyScripts\Http\Response
      */
-    public function getMedicines($search = null)
+    public function getMedicines($search = null, $take = 24, $skip = 0)
     {
-        $query = [];
-
-        if (!is_null($search) && $search instanceof SearchQuery) {
-            $query = array_merge($query, $search->getRequestQuery());
-        }
+        $query = [
+            "Search" => trim($search),
+            "Take"   => $take,
+            "Skip"   => $skip,
+        ];
 
         $request = new Request("/medicines", Request::DEFAULT_HEADERS, $query);
 
@@ -514,6 +514,28 @@ class EazyScripts
         return http_build_url($request->getUrl(), [
             "query" => $query,
         ]);
+    }
+
+    public function cancelPrescription($params)
+    {
+        if (!isset($params["PrescriptionId"]) && !isset($params["ConsultationId"]) ) {
+            throw new EazyScriptsException("You must provide a PrescriptionId or a ConsultationId when canceling a prescription");
+        }
+
+        $query = http_build_query(array_merge([
+            "Token"             => $this->getToken(),
+            "ApplicationKey"    => $this->key,
+            "ApplicationSecret" => $this->secret,
+            "Subdomain"         => $this->subdomain
+        ], $params));
+
+        $request->withAuthorization($this->getToken(), true);
+
+        return http_build_url($request->getUrl(), [
+            "query" => $query,
+        ]);
+        
+        return $request->get();
     }
 
     /**
@@ -608,6 +630,36 @@ class EazyScripts
 
         $request = new Request("/requests/refills", Request::DEFAULT_HEADERS, $query);
 
+        $request->withAuthorization($this->getToken(), true);
+
+        return $request->get();
+    }
+
+    /**
+     * Submit patient prescription
+     *
+     * @param  SearchQuery|null $search
+     * @return EazyScripts\Http\Response
+     * @throws EazyScriptsException
+     */
+    public function submitPrescription($patientId, $body)
+    {
+        $body = Request::json($body);
+        $request = new Request("/patients/" . $patientId . "/prescriptions/submit", Request::DEFAULT_HEADERS, '[' . $body . ']');
+        $request->withAuthorization($this->getToken(), true);
+
+        return $request->post();
+    }
+
+    /**
+     * Get the potency unit codes associated with a medicine.
+     *
+     * @param [type] $medicine_id
+     * @return void
+     */
+    public function getPotencyUnitCodes($medicine_id)
+    {
+        $request = new Request("/medicines/" . $medicine_id . "/potency-unit-codes", Request::DEFAULT_HEADERS);
         $request->withAuthorization($this->getToken(), true);
 
         return $request->get();
