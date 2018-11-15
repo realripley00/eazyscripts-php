@@ -432,13 +432,13 @@ class EazyScripts
      * @param  SearchQuery|null $search
      * @return EazyScripts\Http\Response
      */
-    public function getPharmacies($search = null)
+    public function getPharmacies($search, $take, $skip)
     {
-        $query = [];
-
-        if (!is_null($search) && $search instanceof SearchQuery) {
-            $query = array_merge($query, $search->getRequestQuery());
-        }
+        $query = [
+            "Search" => trim($search),
+            "Take"   => $take,
+            "Skip"   => $skip,
+        ];
 
         $request = new Request("/pharmacies", Request::DEFAULT_HEADERS, $query);
 
