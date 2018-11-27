@@ -93,9 +93,14 @@ class EazyScripts
      *
      * @return EazyScripts\Http\Response
      */
-    public function getPatients()
+    public function getPatients($take, $skip)
     {
-        $request = new Request("/patients", Request::DEFAULT_HEADERS, []);
+        $query = [
+            "Take"   => $take,
+            "Skip"   => $skip,
+        ];
+
+        $request = new Request("/patients", Request::DEFAULT_HEADERS, $query);
 
         $request->withAuthorization($this->getToken(), true);
 
@@ -329,11 +334,8 @@ class EazyScripts
      */
     public function addPrescriber($body)
     {
-        $default = [
-            "Level" => self::USER_LEVEL_DOCTOR,
-        ];
 
-        $body = Request::json(array_merge($default, $body));
+        $body = Request::json($body);
 
         $request = new Request("/users", Request::DEFAULT_HEADERS, $body);
 
