@@ -654,6 +654,21 @@ class EazyScripts
     }
 
     /**
+     * Get prescription details.
+     *
+     * @param [type] $patientId
+     * @param [type] $prescriptionId
+     * @return void
+     */
+    public function getPrescriptionDetails($patientId, $prescriptionId)
+    {
+        $request = new Request ("/patients/" . $patientId . '/prescriptions/' . $prescriptionId, Request::DEFAULT_HEADERS);
+        $request->withAuthorization($this->getToken(), true);
+
+        return $request->get();
+    }
+
+    /**
      * Get the potency unit codes associated with a medicine.
      *
      * @param [type] $medicine_id
