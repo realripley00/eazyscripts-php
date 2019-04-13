@@ -450,6 +450,46 @@ class EazyScripts
     }
 
     /**
+     * Advanced pharmacy search
+     *
+     * @param [type] $search
+     * @param integer $range
+     * @param [type] $address
+     * @param integer $take
+     * @return void
+     */
+    public function getPharmaciesAdvanced($search, $range = 50, $address, $take = 100)
+    {
+        $query = [
+            "Search" => trim($search),
+            "Range" => $range,
+            "Address" => $address,
+            "Take" => $take
+        ];
+
+        $request = new Request("/pharmacies/advancepharmacysearch", Request::DEFAULT_HEADERS, $query);
+
+        $request->withAuthorization($this->getToken(), true);
+
+        return $request->get();
+    }
+
+    /**
+     * Get a specific pharmacy's details.
+     *
+     * @param [type] $id
+     * @return void
+     */
+    public function getPharmacy($id)
+    {
+        $request = new Request(sprintf("/pharmacies/%s/", $id), Request::DEFAULT_HEADERS);
+
+        $request->withAuthorization($this->getToken(), true);
+
+        return $request->get();
+    }
+
+    /**
      * Get all medicinesaa
      *
      * @param  SearchQuery|null $search
