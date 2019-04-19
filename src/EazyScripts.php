@@ -123,6 +123,25 @@ class EazyScripts
     }
 
     /**
+     * Serach for a user based on email address.
+     *
+     * @param [type] $email
+     * @return void
+     */
+    public function searchPatient($email)
+    {
+        $query = [
+            "Email"   => $email
+        ];
+
+        $request = new Request(sprintf("/patients/searchbyusername"), Request::DEFAULT_HEADERS, $query);
+
+        $request->withAuthorization($this->getToken(), true);
+
+        return $request->get();
+    }
+
+    /**
      * Get a single patients addresses
      *
      * @param  string $id
