@@ -492,6 +492,22 @@ class EazyScripts
 
         return $request->get();
     }
+    
+    public function getMailInPharmacies($search, $state, $skip, $take)
+    {
+        $query = [
+            "Search" => trim($search),
+            "Take" => $take,
+            "Skip" => $skip,
+            "State" => $state,
+            "Type" => 4
+        ];
+
+        $request = new Request("/pharmacies/types", Request::DEFAULT_HEADERS, $query);
+        $request->withAuthorization($this->getToken(), true);
+
+        return $request->get();
+    }
 
     /**
      * Get a specific pharmacy's details.
